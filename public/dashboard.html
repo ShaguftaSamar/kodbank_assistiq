@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kodbank — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0A1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a6b;
+      --gold: #C9A84C;
+      --gold-light: #e4c46e;
+      --white: #F8F9FC;
+      --bg: #EEF1F8;
+      --muted: #8a9bb5;
+      --error: #e05c5c;
+      --success: #4caf82;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--navy);
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--navy);
+      padding: 0 40px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--white);
+    }
+
+    .brand-name span { color: var(--gold); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .nav-username {
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover { background: rgba(255,255,255,0.18); }
+
+    /* Main */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .greeting {
+      margin-bottom: 32px;
+    }
+
+    .greeting h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .greeting p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      border-radius: 24px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      grid-column: 1;
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.12);
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.06);
+    }
+
+    .card-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .balance-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      color: var(--white);
+      margin-bottom: 8px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+    }
+
+    .balance-hidden {
+      font-size: 28px;
+      letter-spacing: 8px;
+      color: var(--muted);
+    }
+
+    .balance-sub {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .check-btn {
+      margin-top: 28px;
+      padding: 14px 28px;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .check-btn:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(201,168,76,0.3);
+    }
+
+    .check-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    /* Info Card */
+    .info-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 32px;
+    }
+
+    .info-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 24px;
+      color: var(--navy);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f2f8;
+      font-size: 14px;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--muted); }
+    .info-val { font-weight: 600; color: var(--navy); }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-gold { background: rgba(201,168,76,0.15); color: var(--gold); }
+    .badge-green { background: rgba(76,175,130,0.15); color: var(--success); }
+
+    /* Activity Card */
+    .activity-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 32px;
+      grid-column: 1 / -1;
+    }
+
+    .activity-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .activity-empty {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .activity-empty .icon { font-size: 36px; margin-bottom: 12px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px; right: 24px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      transform: translateY(-80px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 1000;
+    }
+
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Balance Reveal Overlay */
+    .reveal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,22,40,0.85);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      backdrop-filter: blur(8px);
+    }
+
+    .reveal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .reveal-card {
+      background: white;
+      border-radius: 28px;
+      padding: 52px 60px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      transform: scale(0.85);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .reveal-overlay.show .reveal-card { transform: scale(1); }
+
+    .reveal-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
+
+    .reveal-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .reveal-balance {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: var(--navy);
+      margin-bottom: 8px;
+      animation: countUp 0.8s ease-out;
+    }
+
+    .reveal-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .reveal-close {
+      padding: 14px 32px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .reveal-close:hover { background: var(--navy-light); }
+
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -20px;
+      opacity: 0;
+      animation: confettiFall linear forwards;
+      z-index: 600;
+      border-radius: 2px;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(10,22,40,0.3);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .activity-card { grid-column: 1; }
+      .navbar { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🏦</div>
+      <div class="brand-name">Kod<span>bank</span></div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="avatarEl">?</div>
+        <span class="nav-username" id="navUsername">Loading...</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="greeting">
+      <h1>Good day, <span id="greetName">there</span> 👋</h1>
+      <p>Here's your financial overview for today</p>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="card-label">Available Balance</div>
+        <div class="balance-amount">
+          <span class="balance-hidden" id="balanceDisplay">••••••</span>
+        </div>
+        <div class="balance-sub">Savings Account · Kodbank</div>
+        <button class="check-btn" id="checkBtn" onclick="checkBalance()">
+          💰 Check Balance
+        </button>
+      </div>
+
+      <!-- Info Card -->
+      <div class="info-card">
+        <h3>Account Details</h3>
+        <div class="info-row">
+          <span class="info-key">Account Holder</span>
+          <span class="info-val" id="infoUsername">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Account Type</span>
+          <span class="info-val">Savings Account</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Role</span>
+          <span><span class="badge badge-gold">Customer</span></span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Status</span>
+          <span><span class="badge badge-green">Active</span></span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Security</span>
+          <span class="info-val">🔒 JWT Secured</span>
+        </div>
+      </div>
+
+      <!-- Activity Card -->
+      <div class="activity-card">
+        <h3>Recent Activity</h3>
+        <div class="activity-empty">
+          <div class="icon">📊</div>
+          <div>No recent transactions yet.<br/>Start using your account to see activity here.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Balance Reveal Overlay -->
+  <div class="reveal-overlay" id="revealOverlay">
+    <div class="reveal-card">
+      <span class="reveal-emoji">🎉</span>
+      <div class="reveal-label">Your Current Balance</div>
+      <div class="reveal-balance" id="revealAmount">₹0.00</div>
+      <div class="reveal-sub">Kodbank Savings Account</div>
+      <button class="reveal-close" onclick="closeReveal()">Done</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let currentUsername = '';
+
+    // Load user info on page load
+    window.addEventListener('load', async () => {
+      try {
+        const res = await fetch('/api/getBalance', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          currentUsername = data.username;
+          document.getElementById('navUsername').textContent = data.username;
+          document.getElementById('avatarEl').textContent = data.username[0].toUpperCase();
+          document.getElementById('greetName').textContent = data.username;
+          document.getElementById('infoUsername').textContent = data.username;
+        } else {
+          window.location.href = '/login';
+        }
+      } catch {
+        window.location.href = '/login';
+      }
+    });
+
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    async function checkBalance() {
+      const btn = document.getElementById('checkBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Fetching...';
+
+      try {
+        const res = await fetch('/api/getBalance', { method: 'POST' });
+        const data = await res.json();
+
+        if (data.success) {
+          const formatted = '₹' + Number(data.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+          document.getElementById('balanceDisplay').textContent = formatted;
+          document.getElementById('balanceDisplay').className = '';
+          document.getElementById('revealAmount').textContent = formatted;
+
+          // Show overlay
+          document.getElementById('revealOverlay').classList.add('show');
+
+          // Launch confetti
+          launchConfetti();
+        } else {
+          showToast(data.message, 'error');
+          if (data.message.includes('login')) {
+            setTimeout(() => window.location.href = '/login', 2000);
+          }
+        }
+      } catch {
+        showToast('Something went wrong. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💰 Check Balance';
+      }
+    }
+
+    function closeReveal() {
+      document.getElementById('revealOverlay').classList.remove('show');
+    }
+
+    function launchConfetti() {
+      const colors = ['#C9A84C', '#e4c46e', '#0A1628', '#4caf82', '#e05c5c', '#5c9ee0', '#ffffff'];
+      const shapes = ['square', 'circle'];
+
+      for (let i = 0; i < 120; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'confetti-piece';
+          el.style.left = Math.random() * 100 + 'vw';
+          el.style.background = colors[Math.floor(Math.random() * colors.length)];
+          el.style.width = (Math.random() * 8 + 6) + 'px';
+          el.style.height = (Math.random() * 8 + 6) + 'px';
+          el.style.borderRadius = shapes[Math.floor(Math.random() * 2)] === 'circle' ? '50%' : '2px';
+          el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          el.style.animationDelay = '0s';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 4000);
+        }, Math.random() * 400);
+      }
+    }
+
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+  </script>
+  <!-- AssistIQ Chat Bubble -->
+<style>
+  .assistiq-bubble {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #C9A84C, #e4c46e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+    z-index: 9999;
+    font-size: 22px;
+    border: none;
+    transition: transform 0.2s;
+  }
+
+  .assistiq-bubble:hover {
+    transform: scale(1.1);
+  }
+
+  .assistiq-iframe {
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    width: 380px;
+    height: 560px;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    z-index: 9998;
+    display: none;
+  }
+</style>
+
+<button class="assistiq-bubble" onclick="toggleAssistIQ()" title="Ask AssistIQ">✦</button>
+<iframe class="assistiq-iframe" id="assistiqFrame" src="https://assist-iq.vercel.app"></iframe>
+
+<script>
+  function toggleAssistIQ() {
+    const frame = document.getElementById('assistiqFrame');
+    frame.style.display = frame.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+</body>
+</html>
