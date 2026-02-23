@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kodbank — Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0A1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a6b;
+      --gold: #C9A84C;
+      --gold-light: #e4c46e;
+      --white: #F8F9FC;
+      --muted: #8a9bb5;
+      --error: #e05c5c;
+      --success: #4caf82;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: -200px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      bottom: -150px; right: -150px;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,58,107,0.5) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 28px;
+      padding: 52px 48px;
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: var(--navy);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--navy);
+    }
+
+    .brand-name span { color: var(--gold); }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 36px;
+    }
+
+    .form-subtitle a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1.5px solid #dde3ef;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--navy);
+      background: #f8f9fc;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--gold);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.1);
+    }
+
+    .form-group input.error { border-color: var(--error); }
+
+    .error-msg {
+      font-size: 11px;
+      color: var(--error);
+      margin-top: 5px;
+      display: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.3s;
+      letter-spacing: 0.3px;
+    }
+
+    .submit-btn:hover {
+      background: var(--navy-light);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(10,22,40,0.2);
+    }
+
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px; right: 24px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      transform: translateY(-80px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 1000;
+    }
+
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">🏦</div>
+      <div class="brand-name">Kod<span>bank</span></div>
+    </div>
+
+    <h2 class="form-title">Welcome back</h2>
+    <p class="form-subtitle">Don't have an account? <a href="/">Register here</a></p>
+
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Enter your username" autocomplete="username"/>
+        <div class="error-msg" id="username-err">Username is required</div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"/>
+        <div class="error-msg" id="password-err">Password is required</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Sign In to Kodbank</button>
+    </form>
+
+    <div class="secure-note">🔒 Secured with 256-bit JWT encryption</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function setError(id, msg) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(id + '-err');
+      if (el) el.classList.add('error');
+      if (err) { err.textContent = msg; err.style.display = 'block'; }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+      document.querySelectorAll('input').forEach(e => e.classList.remove('error'));
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      let valid = true;
+      if (!username) { setError('username', 'Username is required'); valid = false; }
+      if (!password) { setError('password', 'Password is required'); valid = false; }
+      if (!valid) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => window.location.href = '/dashboard', 1500);
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch {
+        showToast('Something went wrong. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In to Kodbank';
+      }
+    });
+  </script>
+</body>
+</html>
