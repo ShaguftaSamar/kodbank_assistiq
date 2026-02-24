@@ -411,10 +411,62 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* AssistIQ */
+    .assistiq-bubble {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, #C9A84C, #e4c46e);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+      z-index: 9999;
+      border: none;
+      transition: all 0.3s;
+      padding: 14px 22px;
+    }
+
+    .assistiq-bubble:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(201,168,76,0.6);
+    }
+
+    .assistiq-bubble-icon { font-size: 18px; }
+
+    .assistiq-bubble-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0A1628;
+    }
+
+    .assistiq-bubble-text span {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+    }
+
+    .assistiq-iframe {
+      position: fixed;
+      bottom: 92px;
+      right: 24px;
+      width: 400px;
+      height: 580px;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+      z-index: 9998;
+      display: none;
+    }
+
     @media (max-width: 768px) {
       .cards-grid { grid-template-columns: 1fr; }
       .activity-card { grid-column: 1; }
       .navbar { padding: 0 20px; }
+      .assistiq-iframe { width: 94vw; right: 3vw; }
     }
   </style>
 </head>
@@ -502,10 +554,16 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- AssistIQ -->
+  <button class="assistiq-bubble" onclick="toggleAssistIQ()" title="Ask AssistIQ">
+    <span class="assistiq-bubble-icon">✦</span>
+    <span class="assistiq-bubble-text">Ask <span>AssistIQ</span></span>
+  </button>
+  <iframe class="assistiq-iframe" id="assistiqFrame" src="https://assist-iq.vercel.app"></iframe>
+
   <script>
     let currentUsername = '';
 
-    // Load user info on page load
     window.addEventListener('load', async () => {
       try {
         const res = await fetch('/api/getBalance', { method: 'POST' });
@@ -545,11 +603,7 @@
           document.getElementById('balanceDisplay').textContent = formatted;
           document.getElementById('balanceDisplay').className = '';
           document.getElementById('revealAmount').textContent = formatted;
-
-          // Show overlay
           document.getElementById('revealOverlay').classList.add('show');
-
-          // Launch confetti
           launchConfetti();
         } else {
           showToast(data.message, 'error');
@@ -572,7 +626,6 @@
     function launchConfetti() {
       const colors = ['#C9A84C', '#e4c46e', '#0A1628', '#4caf82', '#e05c5c', '#5c9ee0', '#ffffff'];
       const shapes = ['square', 'circle'];
-
       for (let i = 0; i < 120; i++) {
         setTimeout(() => {
           const el = document.createElement('div');
@@ -594,54 +647,11 @@
       await fetch('/api/auth/logout', { method: 'POST' });
       window.location.href = '/login';
     }
+
+    function toggleAssistIQ() {
+      const frame = document.getElementById('assistiqFrame');
+      frame.style.display = frame.style.display === 'block' ? 'none' : 'block';
+    }
   </script>
-  <!-- AssistIQ Chat Bubble -->
-<style>
-  .assistiq-bubble {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #C9A84C, #e4c46e);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(201,168,76,0.4);
-    z-index: 9999;
-    font-size: 22px;
-    border: none;
-    transition: transform 0.2s;
-  }
-
-  .assistiq-bubble:hover {
-    transform: scale(1.1);
-  }
-
-  .assistiq-iframe {
-    position: fixed;
-    bottom: 92px;
-    right: 24px;
-    width: 380px;
-    height: 560px;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    z-index: 9998;
-    display: none;
-  }
-</style>
-
-<button class="assistiq-bubble" onclick="toggleAssistIQ()" title="Ask AssistIQ">✦</button>
-<iframe class="assistiq-iframe" id="assistiqFrame" src="https://assist-iq.vercel.app"></iframe>
-
-<script>
-  function toggleAssistIQ() {
-    const frame = document.getElementById('assistiqFrame');
-    frame.style.display = frame.style.display === 'block' ? 'none' : 'block';
-  }
-</script>
 </body>
 </html>
